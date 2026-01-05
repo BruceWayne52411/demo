@@ -464,7 +464,7 @@ function applyAttackerAbility(moveType, damage, abilityName) {
     crit: crit.checked
   });
 
-fetch("http://YOUR_PUBLIC_IP:8080/api/damage?" + params)
+fetch("https://your-service-name.onrender.com/api/damage?" + params)
   let dmg = parseFloat(await res.text());
 
   dmg = applyAttackerAbility(move, dmg, atkAb);
