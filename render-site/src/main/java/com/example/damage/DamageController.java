@@ -11,8 +11,8 @@ public class DamageController {
     public int calculate(
             @RequestParam int level,
             @RequestParam int power,
-            @RequestParam int attack,
-            @RequestParam int defense,
+            @RequestParam float attack,
+            @RequestParam float defense,
             @RequestParam(defaultValue = "1.0") double effectiveness,
             @RequestParam(defaultValue = "1.0") double stab,
             @RequestParam(defaultValue = "false") boolean crit

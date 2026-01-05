@@ -163,9 +163,9 @@
         <h3 style="margin:0 0 8px;color:#ffd7a1;">Type Chart</h3>
 
         <label>
-  Attacker Ability
-  <select id="atkAbility"></select>
-</label>
+            Attacker Ability
+            <select id="atkAbility"></select>
+        </label>
 
 
         <label>
@@ -270,27 +270,27 @@
             }
         ];
         function fillAttackAbilitySelect() {
-  const sel = document.getElementById("atkAbility");
-  sel.innerHTML = "";
-  for (const a of BUILTIN_ATTACK_ABILITIES) {
-    const opt = document.createElement("option");
-    opt.value = a.name;
-    opt.textContent = a.name;
-    sel.appendChild(opt);
-  }
-}
+            const sel = document.getElementById("atkAbility");
+            sel.innerHTML = "";
+            for (const a of BUILTIN_ATTACK_ABILITIES) {
+                const opt = document.createElement("option");
+                opt.value = a.name;
+                opt.textContent = a.name;
+                sel.appendChild(opt);
+            }
+        }
 
-function applyAttackerAbility(moveType, damage, abilityName) {
-  const ability = BUILTIN_ATTACK_ABILITIES.find(a => a.name === abilityName);
-  if (!ability) return damage;
+        function applyAttackerAbility(moveType, damage, abilityName) {
+            const ability = BUILTIN_ATTACK_ABILITIES.find(a => a.name === abilityName);
+            if (!ability) return damage;
 
-  let d = damage;
-  for (const rule of ability.rules) {
-    if (rule.whenMoveType && rule.whenMoveType !== moveType) continue;
-    if (typeof rule.multiplyDamage === "number") d *= rule.multiplyDamage;
-  }
-  return d;
-}
+            let d = damage;
+            for (const rule of ability.rules) {
+                if (rule.whenMoveType && rule.whenMoveType !== moveType) continue;
+                if (typeof rule.multiplyDamage === "number") d *= rule.multiplyDamage;
+            }
+            return d;
+        }
 
         // Load custom abilities from localStorage
         function loadCustomAbilities() {
@@ -339,12 +339,12 @@ function applyAttackerAbility(moveType, damage, abilityName) {
         }
 
         const BUILTIN_ATTACK_ABILITIES = [
-  { name: "(None)", rules: [] },
-  { name: "Dark Aura", rules: [{ whenMoveType: "Dark", multiplyDamage: 1.33 }] },
-  { name: "Fairy Aura", rules: [{ whenMoveType: "Fairy", multiplyDamage: 1.33 }] },
-  // Optional later:
-  // { name: "Aura Break", rules: [{ whenMoveType: "Dark", multiplyDamage: 0.75 }, { whenMoveType: "Fairy", multiplyDamage: 0.75 }] }
-];
+            { name: "(None)", rules: [] },
+            { name: "Dark Aura", rules: [{ whenMoveType: "Dark", multiplyDamage: 1.33 }] },
+            { name: "Fairy Aura", rules: [{ whenMoveType: "Fairy", multiplyDamage: 1.33 }] },
+            // Optional later:
+            // { name: "Aura Break", rules: [{ whenMoveType: "Dark", multiplyDamage: 0.75 }, { whenMoveType: "Fairy", multiplyDamage: 0.75 }] }
+        ];
 
         // Custom ability: simple immunity creator
         function addCustomAbility() {
@@ -451,26 +451,26 @@ function applyAttackerAbility(moveType, damage, abilityName) {
         }
 
         async function calculate() {
-  const move = document.getElementById("moveType").value;
-  const atkAb = document.getElementById("atkAbility").value;
+            const move = document.getElementById("moveType").value;
+            const atkAb = document.getElementById("atkAbility").value;
 
-  const params = new URLSearchParams({
-    level: level.value,
-    power: power.value,
-    attack: attack.value,
-    defense: defense.value,
-    effectiveness: effectiveness.value,
-    stab: stab.value,
-    crit: crit.checked
-  });
+            const params = new URLSearchParams({
+                level: level.value,
+                power: power.value,
+                attack: attack.value,
+                defense: defense.value,
+                effectiveness: effectiveness.value,
+                stab: stab.value,
+                crit: crit.checked
+            });
 
-fetch("https://your-service-name.onrender.com/api/damage?" + params)
-  let dmg = parseFloat(await res.text());
+            const res = await fetch("https://damage-api.onrender.com/api/damage?" + params);
+            let dmg = parseFloat(await res.text());
 
-  dmg = applyAttackerAbility(move, dmg, atkAb);
+            dmg = applyAttackerAbility(move, dmg, atkAb);
 
-  result.textContent = "Damage: " + Math.floor(dmg);
-}
+            result.textContent = "Damage: " + Math.floor(dmg);
+        }
 
 
         // Init on load
@@ -493,7 +493,7 @@ fetch("https://your-service-name.onrender.com/api/damage?" + params)
             fillAbilitySelect();
             fillSelect(document.getElementById("customImmunityType"), true);
             fillAttackAbilitySelect();
-atkAbility.value = "(None)";
+            atkAbility.value = "(None)";
 
 
             defAbility.addEventListener("change", updateTypeUI);
