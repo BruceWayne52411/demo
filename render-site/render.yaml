@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: damage-api
+    env: java
+    rootDir: render-site
+    buildCommand: mvn clean package
+    startCommand: java -jar target/*.jar
