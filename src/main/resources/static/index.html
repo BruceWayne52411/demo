@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Damage Calculator</title>
+
+    <style>
+        /* ----------- GLOBAL ----------- */
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: "Segoe UI", system-ui, sans-serif;
+            color: #f5f2eb;
+        }
+
+        body {
+            background:
+                radial-gradient(circle at bottom center, rgba(255, 140, 60, 0.35), transparent 60%),
+                url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1920&q=80");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ----------- CARD ----------- */
+        .card {
+            background: rgba(20, 15, 10, 0.75);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 200, 120, 0.2);
+            border-radius: 14px;
+            padding: 28px 34px;
+            width: 380px;
+            box-shadow:
+                0 0 60px rgba(255, 120, 40, 0.25),
+                inset 0 0 40px rgba(0, 0, 0, 0.6);
+
+        }
+
+        /* ----------- TITLE ----------- */
+        h1 {
+            margin-top: 0;
+            text-align: center;
+            letter-spacing: 1px;
+            color: #ffd7a1;
+            text-shadow: 0 0 12px rgba(255, 140, 60, 0.6);
+        }
+
+        /* ----------- FORM ----------- */
+        label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        input,
+        select {
+            background: rgba(40, 30, 20, 0.9);
+            border: 1px solid rgba(255, 200, 120, 0.25);
+            color: #f5f2eb;
+            padding: 6px 8px;
+            border-radius: 6px;
+            width: 120px;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #ffae42;
+            box-shadow: 0 0 6px rgba(255, 170, 66, 0.6);
+        }
+
+        /* ----------- BUTTON ----------- */
+        button {
+            width: 100%;
+            margin-top: 16px;
+            padding: 10px;
+            background: linear-gradient(#ff9b3c, #d16a1d);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #2b1505;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 140, 60, 0.6);
+        }
+
+        button:hover {
+            filter: brightness(1.1);
+        }
+
+        /* ----------- RESULT ----------- */
+        #result {
+            margin-top: 18px;
+            text-align: center;
+            font-size: 1.2rem;
+            color: #ffe4b5;
+            text-shadow: 0 0 10px rgba(255, 140, 60, 0.7);
+        }
+
+        /* ----------- CAMPFIRE FLICKER ----------- */
+        @keyframes flicker {
+            0% {
+                box-shadow: 0 0 40px rgba(255, 120, 40, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 60px rgba(255, 160, 80, 0.5);
+            }
+
+            100% {
+                box-shadow: 0 0 45px rgba(255, 120, 40, 0.35);
+            }
+        }
+
+        .card {
+            animation: flicker 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <h1>Damage Calculator</h1>
+
+        <label>Level <input id="level" type="number" value="50"></label>
+        <label>Power <input id="power" type="number" value="80"></label>
+        <label>Attack <input id="attack" type="number" value="120"></label>
+        <label>Defense <input id="defense" type="number" value="100"></label>
+
+        <label>
+            Effectiveness
+            <select id="effectiveness">
+                <option value="1.0">Normal</option>
+                <option value="2.0">Super Effective</option>
+                <option value="0.5">Not Very Effective</option>
+            </select>
+        </label>
+
+        <label>
+            STAB
+            <select id="stab">
+                <option value="1.0">None</option>
+                <option value="1.5">Default</option>
+                <option value="2.0">Custom</option>
+            </select>
+        </label>
+
+        <label>
+            Critical Hit
+            <input id="crit" type="checkbox">
+        </label>
+
+        <hr style="border:0;border-top:1px solid rgba(255,200,120,0.2);margin:16px 0;">
+
+        <h3 style="margin:0 0 8px;color:#ffd7a1;">Type Chart</h3>
+
+        <label>
+  Attacker Ability
+  <select id="atkAbility"></select>
+</label>
+
+
+        <label>
+            Move Type
+            <select id="moveType"></select>
+        </label>
+
+        <label>
+            Defender Type 1
+            <select id="defType1"></select>
+        </label>
+
+        <label>
+            Defender Type 2
+            <select id="defType2"></select>
+        </label>
+
+        <label>
+            Defender Ability
+            <select id="defAbility"></select>
+        </label>
+
+        <details style="margin-top:10px;">
+            <summary style="cursor:pointer;color:#ffd7a1;">Add Custom Ability</summary>
+            <div style="margin-top:10px;">
+                <label>Name <input id="customAbilityName" type="text" placeholder="My Ability"></label><br>
+                <label>
+                    Immunity to move type
+                    <select id="customImmunityType"></select>
+                </label><br>
+                <button type="button" onclick="addCustomAbility()">Add Ability</button>
+            </div>
+        </details>
+
+
+        <div id="typeResult" style="margin-top:10px;text-align:center;"></div>
+
+
+        <button onclick="calculate()">Calculate</button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        /** Gen 6+ type chart (Fairy included). Multipliers are vs defender. */
+        const TYPE_CHART = {
+            Normal: { Rock: 0.5, Ghost: 0.0, Steel: 0.5 },
+            Fire: { Fire: 0.5, Water: 0.5, Grass: 2, Ice: 2, Bug: 2, Rock: 0.5, Dragon: 0.5, Steel: 2 },
+            Water: { Fire: 2, Water: 0.5, Grass: 0.5, Ground: 2, Rock: 2, Dragon: 0.5 },
+            Electric: { Water: 2, Electric: 0.5, Grass: 0.5, Ground: 0, Flying: 2, Dragon: 0.5 },
+            Grass: { Fire: 0.5, Water: 2, Grass: 0.5, Poison: 0.5, Ground: 2, Flying: 0.5, Bug: 0.5, Rock: 2, Dragon: 0.5, Steel: 0.5 },
+            Ice: { Fire: 0.5, Water: 0.5, Grass: 2, Ice: 0.5, Ground: 2, Flying: 2, Dragon: 2, Steel: 0.5 },
+            Fighting: { Normal: 2, Ice: 2, Rock: 2, Dark: 2, Steel: 2, Poison: 0.5, Flying: 0.5, Psychic: 0.5, Bug: 0.5, Fairy: 0.5, Ghost: 0 },
+            Poison: { Grass: 2, Fairy: 2, Poison: 0.5, Ground: 0.5, Rock: 0.5, Ghost: 0.5, Steel: 0 },
+            Ground: { Fire: 2, Electric: 2, Grass: 0.5, Poison: 2, Flying: 0, Bug: 0.5, Rock: 2, Steel: 2 },
+            Flying: { Electric: 0.5, Grass: 2, Fighting: 2, Bug: 2, Rock: 0.5, Steel: 0.5 },
+            Psychic: { Fighting: 2, Poison: 2, Psychic: 0.5, Steel: 0.5, Dark: 0 },
+            Bug: { Fire: 0.5, Grass: 2, Fighting: 0.5, Poison: 0.5, Flying: 0.5, Psychic: 2, Ghost: 0.5, Dark: 2, Steel: 0.5, Fairy: 0.5 },
+            Rock: { Fire: 2, Ice: 2, Flying: 2, Bug: 2, Fighting: 0.5, Ground: 0.5, Steel: 0.5 },
+            Ghost: { Normal: 0, Psychic: 2, Ghost: 2, Dark: 0.5 },
+            Dragon: { Dragon: 2, Steel: 0.5, Fairy: 0 },
+            Dark: { Psychic: 2, Ghost: 2, Fighting: 0.5, Dark: 0.5, Fairy: 0.5 },
+            Steel: { Fire: 0.5, Water: 0.5, Electric: 0.5, Ice: 2, Rock: 2, Fairy: 2, Steel: 0.5 },
+            Fairy: { Fighting: 2, Dragon: 2, Dark: 2, Fire: 0.5, Poison: 0.5, Steel: 0.5 }
+        };
+
+        const BUILTIN_ABILITIES = [
+            {
+                name: "(None)",
+                rules: []
+            },
+            {
+                name: "Levitate",
+                rules: [{ whenMoveType: "Ground", setMultiplier: 0 }]
+            },
+            {
+                name: "Flash Fire",
+                rules: [{ whenMoveType: "Fire", setMultiplier: 0 }]
+            },
+            {
+                name: "Water Absorb",
+                rules: [{ whenMoveType: "Water", setMultiplier: 0 }]
+            },
+            {
+                name: "Volt Absorb",
+                rules: [{ whenMoveType: "Electric", setMultiplier: 0 }]
+            },
+            {
+                name: "Sap Sipper",
+                rules: [{ whenMoveType: "Grass", setMultiplier: 0 }]
+            },
+            {
+                name: "Thick Fat",
+                rules: [
+                    { whenMoveType: "Fire", multiply: 0.5 },
+                    { whenMoveType: "Ice", multiply: 0.5 }
+                ]
+            },
+            {
+                name: "Filter / Solid Rock",
+                rules: [{ when: "superEffectiveOnly", multiply: 0.75 }]
+            }
+        ];
+        function fillAttackAbilitySelect() {
+  const sel = document.getElementById("atkAbility");
+  sel.innerHTML = "";
+  for (const a of BUILTIN_ATTACK_ABILITIES) {
+    const opt = document.createElement("option");
+    opt.value = a.name;
+    opt.textContent = a.name;
+    sel.appendChild(opt);
+  }
+}
+
+function applyAttackerAbility(moveType, damage, abilityName) {
+  const ability = BUILTIN_ATTACK_ABILITIES.find(a => a.name === abilityName);
+  if (!ability) return damage;
+
+  let d = damage;
+  for (const rule of ability.rules) {
+    if (rule.whenMoveType && rule.whenMoveType !== moveType) continue;
+    if (typeof rule.multiplyDamage === "number") d *= rule.multiplyDamage;
+  }
+  return d;
+}
+
+        // Load custom abilities from localStorage
+        function loadCustomAbilities() {
+            try { return JSON.parse(localStorage.getItem("customAbilities") || "[]"); }
+            catch { return []; }
+        }
+
+        function saveCustomAbilities(list) {
+            localStorage.setItem("customAbilities", JSON.stringify(list));
+        }
+
+        function getAllAbilities() {
+            return [...BUILTIN_ABILITIES, ...loadCustomAbilities()];
+        }
+
+        function fillAbilitySelect() {
+            const sel = document.getElementById("defAbility");
+            sel.innerHTML = "";
+            for (const a of getAllAbilities()) {
+                const opt = document.createElement("option");
+                opt.value = a.name;
+                opt.textContent = a.name;
+                sel.appendChild(opt);
+            }
+        }
+
+        function applyAbility(moveType, baseMultiplier, abilityName) {
+            const ability = getAllAbilities().find(a => a.name === abilityName);
+            if (!ability) return baseMultiplier;
+
+            let m = baseMultiplier;
+
+            for (const rule of ability.rules) {
+                if (rule.whenMoveType && rule.whenMoveType !== moveType) continue;
+
+                if (rule.when === "superEffectiveOnly" && m <= 1) continue;
+
+                if (typeof rule.setMultiplier === "number") {
+                    m = rule.setMultiplier;
+                }
+                if (typeof rule.multiply === "number") {
+                    m *= rule.multiply;
+                }
+            }
+            return m;
+        }
+
+        const BUILTIN_ATTACK_ABILITIES = [
+  { name: "(None)", rules: [] },
+  { name: "Dark Aura", rules: [{ whenMoveType: "Dark", multiplyDamage: 1.33 }] },
+  { name: "Fairy Aura", rules: [{ whenMoveType: "Fairy", multiplyDamage: 1.33 }] },
+  // Optional later:
+  // { name: "Aura Break", rules: [{ whenMoveType: "Dark", multiplyDamage: 0.75 }, { whenMoveType: "Fairy", multiplyDamage: 0.75 }] }
+];
+
+        // Custom ability: simple immunity creator
+        function addCustomAbility() {
+            const name = document.getElementById("customAbilityName").value.trim();
+            const type = document.getElementById("customImmunityType").value;
+
+            if (!name) {
+                alert("Enter an ability name.");
+                return;
+            }
+            if (!type) {
+                alert("Choose an immunity type.");
+                return;
+            }
+
+            const custom = loadCustomAbilities();
+            custom.push({
+                name,
+                rules: [{ whenMoveType: type, setMultiplier: 0 }]
+            });
+            saveCustomAbilities(custom);
+
+            fillAbilitySelect();
+            document.getElementById("defAbility").value = name;
+
+            document.getElementById("customAbilityName").value = "";
+            updateTypeUI();
+        }
+
+
+        const TYPES = Object.keys(TYPE_CHART).sort();
+
+        function fillSelect(sel, includeNone = false) {
+            sel.innerHTML = "";
+            if (includeNone) {
+                const opt = document.createElement("option");
+                opt.value = "";
+                opt.textContent = "(None)";
+                sel.appendChild(opt);
+            }
+            for (const t of TYPES) {
+                const opt = document.createElement("option");
+                opt.value = t;
+                opt.textContent = t;
+                sel.appendChild(opt);
+            }
+        }
+
+        function multiplierFor(moveType, defType) {
+            if (!moveType || !defType) return 1;
+            const table = TYPE_CHART[moveType] || {};
+            return table[defType] ?? 1;
+        }
+
+        function combinedMultiplier(moveType, def1, def2) {
+            let m = multiplierFor(moveType, def1);
+            if (def2) m *= multiplierFor(moveType, def2);
+            return m;
+        }
+
+        function prettyEffect(m) {
+            if (m === 0) return "No effect (0×)";
+            if (m === 0.25) return "Not very effective (0.25×)";
+            if (m === 0.5) return "Not very effective (0.5×)";
+            if (m === 1) return "Normal (1×)";
+            if (m === 2) return "Super effective (2×)";
+            if (m === 4) return "Super effective (4×)";
+            return `${m}×`;
+        }
+
+        function updateTypeUI() {
+            const move = document.getElementById("moveType").value;
+            const d1 = document.getElementById("defType1").value;
+            const d2 = document.getElementById("defType2").value;
+
+            const m = combinedMultiplier(move, d1, d2);
+
+            const abilityName = document.getElementById("defAbility").value;
+            const mWithAbility = applyAbility(move, m, abilityName);
+
+
+            // Auto-write to your damage form's effectiveness selector if it exists.
+            const effSel = document.getElementById("effectiveness");
+            if (effSel) {
+                // If your effectiveness dropdown only has 1/2/0.5, force to nearest:
+                const allowed = Array.from(effSel.options).map(o => parseFloat(o.value));
+                if (allowed.includes(m)) {
+                    effSel.value = String(m);
+                } else {
+                    // add a dynamic option for 4x/0.25x/0x if not present
+                    let existing = Array.from(effSel.options).find(o => parseFloat(o.value) === m);
+                    if (!existing) {
+                        const opt = document.createElement("option");
+                        opt.value = String(m);
+                        opt.textContent = `${prettyEffect(m)}`;
+                        effSel.appendChild(opt);
+                    }
+                    effSel.value = String(m);
+                }
+            }
+
+            const tr = document.getElementById("typeResult");
+            tr.textContent = `Effectiveness: ${prettyEffect(m)}`;
+        }
+
+        async function calculate() {
+  const move = document.getElementById("moveType").value;
+  const atkAb = document.getElementById("atkAbility").value;
+
+  const params = new URLSearchParams({
+    level: level.value,
+    power: power.value,
+    attack: attack.value,
+    defense: defense.value,
+    effectiveness: effectiveness.value,
+    stab: stab.value,
+    crit: crit.checked
+  });
+
+  const res = await fetch("/api/damage?" + params);
+  let dmg = parseFloat(await res.text());
+
+  dmg = applyAttackerAbility(move, dmg, atkAb);
+
+  result.textContent = "Damage: " + Math.floor(dmg);
+}
+
+
+        // Init on load
+        window.addEventListener("DOMContentLoaded", () => {
+            fillSelect(document.getElementById("moveType"));
+            fillSelect(document.getElementById("defType1"));
+            fillSelect(document.getElementById("defType2"), true);
+
+            // defaults for a demo: Fairy vs Dragon
+            moveType.value = "Fairy";
+            defType1.value = "Dragon";
+            defType2.value = "";
+
+            moveType.addEventListener("change", updateTypeUI);
+            defType1.addEventListener("change", updateTypeUI);
+            defType2.addEventListener("change", updateTypeUI);
+
+            updateTypeUI();
+
+            fillAbilitySelect();
+            fillSelect(document.getElementById("customImmunityType"), true);
+            fillAttackAbilitySelect();
+atkAbility.value = "(None)";
+
+
+            defAbility.addEventListener("change", updateTypeUI);
+
+
+            // expose calculate() to the button onclick
+            window.calculate = calculate;
+        });
+    </script>
+
+
+</body>
+
+</html>
