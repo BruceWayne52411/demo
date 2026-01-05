@@ -1,4 +1,4 @@
-package com.example.demo.damage;
+package com.example.damage;
 
 public class DamageFormula {
 

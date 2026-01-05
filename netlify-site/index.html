@@ -464,7 +464,7 @@ function applyAttackerAbility(moveType, damage, abilityName) {
     crit: crit.checked
   });
 
-  const res = await fetch("/api/damage?" + params);
+fetch("http://YOUR_PUBLIC_IP:8080/api/damage?" + params)
   let dmg = parseFloat(await res.text());
 
   dmg = applyAttackerAbility(move, dmg, atkAb);
